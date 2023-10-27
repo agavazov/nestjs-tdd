@@ -11,8 +11,7 @@ export interface DBRecords {
 }
 
 /**
- * Database for demo proposes.
- * !!!! DO NOT USE IT !!!!
+ * Database for demo proposes
  */
 @Injectable()
 export class DummyDb {
@@ -53,7 +52,8 @@ export class DummyDb {
     }
 
     const id = Math.random().toString(36).substring(2, 10);
-    this.storage[table][id] = data;
+    // this.storage[table][id] = data;
+    this.storage[table] = Object.assign({ [id]: data }, this.storage[table]); // Assign it in front
 
     await this.rewrite();
 

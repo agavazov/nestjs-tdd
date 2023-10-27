@@ -2,9 +2,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { AppModule } from '../../../src/app.module';
-import { appSetup } from '../../../src/app.setup';
 
-describe('Store / Books / Create (e2e)', () => {
+describe('Users / Registration (e2e)', () => {
   let app: INestApplication;
   let createdId: string;
 
@@ -14,18 +13,16 @@ describe('Store / Books / Create (e2e)', () => {
     }).compile();
 
     app = moduleFixture.createNestApplication();
-    await appSetup(app);
     await app.init();
   });
 
-  it('Must fail to create a new book because the [description] is wrong', async () => {
+  it('Must fail to register because the email is empty', async () => {
     const res = await request(app.getHttpServer())
-      .post('/store/books')
+      .post('/users/registration')
       .set('Content-type', 'application/json')
       .send({
-        name: 'How to do e2e',
-        description: 'КИРИЛИЦА',
-        price: 123,
+        email: '',
+        password: 'Te$t',
       });
 
     expect(res.statusCode).toBe(400);
@@ -34,14 +31,28 @@ describe('Store / Books / Create (e2e)', () => {
     createdId = res.body.id;
   });
 
-  it('Must successfully create a new book', async () => {
+  it('Must fail to register because the email is empty', async () => {
     const res = await request(app.getHttpServer())
-      .post('/store/books')
+      .post('/users/registration')
       .set('Content-type', 'application/json')
       .send({
-        name: 'How to do e2e',
-        description: 'Quick examples of how to do a testing in NestJS',
-        price: 123,
+        email: 'test@user.com',
+        password: '',
+      });
+
+    expect(res.statusCode).toBe(400);
+    expect(typeof res.body?.id).toBe('undefined');
+
+    createdId = res.body.id;
+  });
+
+  it('Must successfully create a new user', async () => {
+    const res = await request(app.getHttpServer())
+      .post('/users/registration')
+      .set('Content-type', 'application/json')
+      .send({
+        email: 'test@user.com',
+        password: 'Te$t',
       });
 
     expect(res.statusCode).toBe(201);
@@ -52,7 +63,7 @@ describe('Store / Books / Create (e2e)', () => {
   });
 
   it('Must return the created record', async () => {
-    const res = await request(app.getHttpServer()).get(`/store/books/${createdId}`);
+    const res = await request(app.getHttpServer()).get(`/users/${createdId}`);
 
     expect(res.body?.id).toBe(createdId);
   });

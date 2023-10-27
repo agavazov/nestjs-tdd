@@ -2,7 +2,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { AppModule } from '../src/app.module';
-import { appSetup } from '../src/app.setup';
 
 describe('Store / Books / Update (e2e)', () => {
   let app: INestApplication;
@@ -14,7 +13,6 @@ describe('Store / Books / Update (e2e)', () => {
     }).compile();
 
     app = moduleFixture.createNestApplication();
-    await appSetup(app);
     await app.init();
   });
 
